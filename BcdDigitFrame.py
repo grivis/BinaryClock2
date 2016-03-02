@@ -1,63 +1,44 @@
 import Tkinter
 
 
-class BcdDigitFrame:
+class BcdDigitFrame(object):
     def __init__(self, parent, images):
-        self.parent = parent
-        self.images=images
-        self.digit = 0
-        self.bcd_array=self.calculate_bcd_array(self.digit)
-        self.setup_ui()
+        self._images=images
+        self._digit = 0
+        self._setup_ui(parent)
 
-    def setup_ui(self):
-        self.dots = self.initialize_dots()
-        index = 0
-        for dot in self.dots:
-            dot.grid(row=index, column=0)
-            index += 1
-        self.digit_label = Tkinter.Label(self.parent, text=self.digit)
-        self.digit_label.grid(row=4, column=0)
+    def _setup_ui(self, parent):
+        self._dots = self._initialize_dots(parent)
+        self._digit_label = Tkinter.Label(parent, text=self._digit)
+        self._digit_label.grid(row=4, column=0)
 
-    def initialize_dots(self):
-        dots = [None] * 4
+    def _initialize_dots(self, parent):
+        dots = []
         for index in range(0, 4):
-            dots[index] = Tkinter.Label(self.parent, image=self.images['OFF_PHOTO'])
-            dots[index].grid(row=index, column=0)
+            dot = Tkinter.Label(parent, image=self._images['OFF_PHOTO'])
+            dot.grid(row=index, column=0)
+            dots.append(dot)
         return dots
 
-    def calculate_bcd_array(self, digit):
-        bcd = [False, False, False, False]
-        if digit % 2 == 1:
-            bcd[3] = True
-        digit /= 2
-        if digit % 2 == 1:
-            bcd[2] = True
-        digit /= 2
-        if digit % 2 == 1:
-            bcd[1] = True
-        digit /= 2
-        if digit % 2 == 1:
-            bcd[0] = True
-        return bcd
+    def _calculate_bcd_array(self, digit):
+        return [digit / (2 ** x) % 2 == 1 for x in range(3,-1,-1)]
 
     def set_digit(self, digit):
-        if not digit == self.digit:
-            self.digit = digit
-            self.bcd_array = self.calculate_bcd_array(digit)
-            self.apply_digit(self.digit)
-            self.apply_bcd_array(self.bcd_array)
+        if not digit == self._digit:
+            self._digit = digit
+            bcd_array = self._calculate_bcd_array(self._digit)
+            self._apply_digit(self._digit)
+            self._apply_bcd_array(bcd_array)
 
-    def apply_digit(self, digit):
-        self.digit_label.config(text=digit)
+    def _apply_digit(self, digit):
+        self._digit_label.config(text=digit)
 
-    def apply_bcd_array(self, bcd_array):
-        for index in range(0,4):
-            is_on = bcd_array[index]
-            dot = self.dots[index]
+    def _apply_bcd_array(self, bcd_array):
+        for (is_on, dot) in zip(bcd_array, self._dots):
             if is_on:
-                dot.config(image=self.images['ON_PHOTO'])
+                dot.config(image=self._images['ON_PHOTO'])
             else:
-                dot.config(image=self.images['OFF_PHOTO'])
+                dot.config(image=self._images['OFF_PHOTO'])
 
 
 if __name__ == '__main__':

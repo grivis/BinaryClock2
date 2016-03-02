@@ -1,45 +1,41 @@
 import Tkinter
 import datetime
-import BcdDigitFrame
+from BcdDigitFrame import BcdDigitFrame
 
 
-class BinaryClock:
+class BinaryClock(object):
     def __init__(self, root):
-        self.root = root
-        self.images =  {'ON_PHOTO': Tkinter.PhotoImage(file='on40.gif'), 'OFF_PHOTO': Tkinter.PhotoImage(file='off40.gif')}
-        self.digits = [0,0,0,0,0,0]
-        self.setup_ui(self.digits)
+        self._root = root
+        self._digits = [0,0,0,0,0,0]
+        self._setup_ui(self._digits)
 
-    def setup_ui(self, digits):
-        self.frames= [None] * 6
-        for index in range(0,6):
-            frame = Tkinter.Frame(self.root)
+    def _setup_ui(self, digits):
+        self._frames= []
+        images =  {'ON_PHOTO': Tkinter.PhotoImage(file='on40.gif'), 'OFF_PHOTO': Tkinter.PhotoImage(file='off40.gif')}
+        for index, digit in enumerate(self._digits):
+            frame = Tkinter.Frame(self._root)
             frame.grid(row=0, column=index)
-            bcd_frame= BcdDigitFrame.BcdDigitFrame(frame, self.images)
-            bcd_frame.set_digit(index)
-            self.frames[index] = bcd_frame
+            bcd_frame = BcdDigitFrame(frame, images)
+            bcd_frame.set_digit(digit)
+            self._frames.append(bcd_frame)
 
-    def time_to_digits(self, the_time):
-        digits = [0, 0, 0, 0, 0, 0]
-        hours = the_time.hour
-        digits[0] = hours / 10
-        digits[1] = hours % 10
-        minutes = the_time.minute
-        digits[2] = minutes / 10
-        digits[3] = minutes % 10
-        seconds = the_time.second
-        digits[4] = seconds / 10
-        digits[5] = seconds % 10
-        return digits
+    def _time_to_digits(self, the_time):
+        return [
+                the_time.hour / 10,
+                the_time.hour % 10,
+                the_time.minute / 10,
+                the_time.minute % 10,
+                the_time.second / 10,
+                the_time.second % 10]
 
     def tick(self):
         the_now = datetime.datetime.now().time()
-        new_digits = self.time_to_digits(the_now)
-        if not new_digits == self.digits:
-            self.digits = new_digits
-            for index in range(0, 6):
-                self.frames[index].set_digit(self.digits[index])
-        self.root.after(100, self.tick)
+        new_digits = self._time_to_digits(the_now)
+        if not new_digits == self._digits:
+            self._digits = new_digits
+            for (frame, digit) in zip(self._frames, self._digits):
+                frame.set_digit(digit)
+        self._root.after(100, self.tick)
 
 
 if __name__ == '__main__':
