@@ -1,14 +1,23 @@
 import Tkinter
 import datetime
+import BcdDigitFrame
 
 
 class BinaryClock:
     def __init__(self, root):
         self.root = root
-        self.on_photo = Tkinter.PhotoImage(file='on40.gif')
-        self.off_photo = Tkinter.PhotoImage(file='off40.gif')
+        self.images =  {'ON_PHOTO': Tkinter.PhotoImage(file='on40.gif'), 'OFF_PHOTO': Tkinter.PhotoImage(file='off40.gif')}
         self.digits = [0,0,0,0,0,0]
         self.setup_ui(self.digits)
+
+    def setup_ui(self, digits):
+        self.frames= [None] * 6
+        for index in range(0,6):
+            frame = Tkinter.Frame(self.root)
+            frame.grid(row=0, column=index)
+            bcd_frame= BcdDigitFrame.BcdDigitFrame(frame, self.images)
+            bcd_frame.set_digit(index)
+            self.frames[index] = bcd_frame
 
     def time_to_digits(self, the_time):
         digits = [0, 0, 0, 0, 0, 0]
@@ -28,21 +37,9 @@ class BinaryClock:
         new_digits = self.time_to_digits(the_now)
         if not new_digits == self.digits:
             self.digits = new_digits
-            self.setup_ui(new_digits)
+            for index in range(0, 6):
+                self.frames[index].set_digit(self.digits[index])
         self.root.after(100, self.tick)
-
-    def setup_ui(self, digits):
-        index = 0
-        for digit in digits:
-            bcd = self.bcd_num(digit)
-            for jndex in range(0,4):
-                photo = self.off_photo
-                if bcd[jndex]:
-                    photo = self.on_photo
-                Tkinter.Label(self.root, image=photo).grid(row=jndex, column=index)
-            Tkinter.Label(self.root, text=digit).grid(row=4, column=index)
-            index += 1
-
 
 
 if __name__ == '__main__':

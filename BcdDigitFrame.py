@@ -2,8 +2,9 @@ import Tkinter
 
 
 class BcdDigitFrame:
-    def __init__(self, parent):
+    def __init__(self, parent, images):
         self.parent = parent
+        self.images=images
         self.digit = 0
         self.bcd_array=self.calculate_bcd_array(self.digit)
         self.setup_ui()
@@ -20,7 +21,7 @@ class BcdDigitFrame:
     def initialize_dots(self):
         dots = [None] * 4
         for index in range(0, 4):
-            dots[index] = Tkinter.Label(self.parent, image=OFF_PHOTO)
+            dots[index] = Tkinter.Label(self.parent, image=self.images['OFF_PHOTO'])
             dots[index].grid(row=index, column=0)
         return dots
 
@@ -54,14 +55,13 @@ class BcdDigitFrame:
             is_on = bcd_array[index]
             dot = self.dots[index]
             if is_on:
-                dot.config(image=ON_PHOTO)
+                dot.config(image=self.images['ON_PHOTO'])
             else:
-                dot.config(image=OFF_PHOTO)
+                dot.config(image=self.images['OFF_PHOTO'])
 
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
-    ON_PHOTO = Tkinter.PhotoImage(file='on40.gif')
-    OFF_PHOTO = Tkinter.PhotoImage(file='off40.gif')
-    bdf = BcdDigitFrame(root)
+    images = {'ON_PHOTO': Tkinter.PhotoImage(file='on40.gif'), 'OFF_PHOTO': Tkinter.PhotoImage(file='off40.gif')}
+    bdf = BcdDigitFrame(root, images)
     root.mainloop()
