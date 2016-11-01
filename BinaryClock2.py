@@ -40,6 +40,7 @@ class BinaryClock(object):
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
+    root.iconbitmap('bclock.ico')
     bc = BinaryClock(root)
     bc.tick()
     root.mainloop()
